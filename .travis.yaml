@@ -3,6 +3,6 @@ sudo: required
 before_script:
   - sudo apt -y update
   - sudo apt -y install linux-image-extra-$(uname -r)
-  # - sudo mount --make-rshared /sys
+  - sudo mount --make-rshared /sys
   - docker run --name enable_lio --privileged --rm --cap-add=SYS_ADMIN -v /lib/modules:/lib/modules -v /sys:/sys:rshared storageos/init:0.1
  
