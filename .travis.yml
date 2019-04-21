@@ -1,33 +1,27 @@
 sudo: required
-
 env:
   global:
-    - IMAGE_NAME=darkowlzz/image-push-test
-
-#before_script:
-  #- sudo apt -y update
-  #- sudo apt -y install linux-image-extra-$(uname -r)
-  #- sudo mount --make-rshared /sys
-  #- docker run --name enable_lio --privileged --rm --cap-add=SYS_ADMIN -v /lib/modules:/lib/modules -v /sys:/sys:rshared storageos/init:0.1
-
+  - IMAGE_NAME=darkowlzz/image-push-test
 script:
-  - docker build -t "$IMAGE_NAME" .
-  - echo "TRAVIS TAG ${TRAVIS_TAG}"
-  - echo "TRAVIS BRANCH ${TRAVIS_BRANCH}"
-  - echo "DONE"
-
+- docker build -t "$IMAGE_NAME" .
+- echo "TRAVIS TAG ${TRAVIS_TAG}"
+- echo "TRAVIS BRANCH ${TRAVIS_BRANCH}"
+- echo "DONE"
 after_script:
-  - docker images
-
+- docker images
 before_deploy:
-  - echo "DEPLOYING..."
-  - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
-  - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:latest"
-  - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${TRAVIS_TAG}"
-
+- echo "DEPLOYING..."
+- docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
+- docker tag "$IMAGE_NAME" "${IMAGE_NAME}:latest"
+- docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${TRAVIS_TAG}"
 deploy:
-  provider: script
-  script: docker push "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
-  on:
-    tags: true
-
+  - provider: script
+    script: docker push "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
+    on:
+      tags: true
+  # - provider: releases
+  #   api_key:
+  #   file: Dockerfile
+  #   skip_cleanup: true
+  #   on:
+  #     tags: true
