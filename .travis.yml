@@ -1,33 +1,28 @@
 sudo: required
-
 env:
   global:
-    - IMAGE_NAME=darkowlzz/image-push-test
-
-#before_script:
-  #- sudo apt -y update
-  #- sudo apt -y install linux-image-extra-$(uname -r)
-  #- sudo mount --make-rshared /sys
-  #- docker run --name enable_lio --privileged --rm --cap-add=SYS_ADMIN -v /lib/modules:/lib/modules -v /sys:/sys:rshared storageos/init:0.1
-
+  - IMAGE_NAME=darkowlzz/image-push-test
 script:
-  - docker build -t "$IMAGE_NAME" .
-  - echo "TRAVIS TAG ${TRAVIS_TAG}"
-  - echo "TRAVIS BRANCH ${TRAVIS_BRANCH}"
-  - echo "DONE"
-
+- docker build -t "$IMAGE_NAME" .
+- echo "TRAVIS TAG ${TRAVIS_TAG}"
+- echo "TRAVIS BRANCH ${TRAVIS_BRANCH}"
+- echo "DONE"
 after_script:
-  - docker images
-
+- docker images
 before_deploy:
-  - echo "DEPLOYING..."
-  - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
-  - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:latest"
-  - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${TRAVIS_TAG}"
-
+- echo "DEPLOYING..."
+- docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
+- docker tag "$IMAGE_NAME" "${IMAGE_NAME}:latest"
+- docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${TRAVIS_TAG}"
 deploy:
-  provider: script
-  script: docker push "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
-  on:
-    tags: true
-
+  - provider: script
+    script: docker push "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
+    on:
+      tags: true
+  - provider: releases
+    api_key:
+      secure: SyDFlVpdI8ehOIoCT7rNZnc4j4XDR+N9t1UHTckWpBbWzPkCneMAhBuFaj0POEdvnieq1RVr6+Mg+cTDG3OUw165sr/3LUts91TMXGJDyJ2ictGuFD/EAvwH1ZJayMH7jNBQJK7BliPhFJ82byC8O7WIYxTvTaMsP6PiYELgioh+v2+kbWLPQumkItriwRKctKt3olUngyBYYxyABLSNDO4OSHcNruHNZSBD0hFWW72Unlsd1gaWejMZsIhCgSSDRCO5D8IHoxwMxxQdTT+sBXM4SGDZlqKoCMr2+Z2et9EpAOJm8NsyySD+lSXaH5nqU8Ojxd5qQwPPm9V768WTYwZ+Eg9EYs9uoLCcGts2ElDqas9LIyLi8iSLWFJIbr7OITz47I6IDc4nNno2IRZT+U7RmDudLGNH/hV+kHMw6c/B/F6g8kEzwLxOpK4mhjcxhcXTK+pAeq+5YhZnpg/LFW0x6tcFON55YVtjhFlyiu9Chu9wAjEoFBs59EU2jnxt7C4M/ittv2Y0rSnGvLQf9txgRCTDaF3WMBRe848GNUdvD7hL5iT62N7iZ4zUUzO61Fnnn4nIhANJYzZDZtJ3+BCwWiKaOf7uzTpoNhv78jZzV1HCp2X1onLIgwB2UHdHIqxpt9Fw+iFFzhVyf/laGIu8rg4FaWx6YqVbj3wvWb8=
+    file: Dockerfile
+    skip_cleanup: true
+    on:
+      tags: true
